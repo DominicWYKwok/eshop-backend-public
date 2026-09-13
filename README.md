@@ -1,27 +1,41 @@
-# E-shop Backend
+# Catto — E-commerce Backend
+
+Spring Boot REST API powering Catto's product catalogue, shopping cart, user profiles, and checkout flow.
+
+### Links to the deployed frontend:
+### [Catto shop](https://store.catto.shop/)
 
 ## Project description
 
-A Spring Boot backend for an e-commerce application. It supports product browsing, authenticated shopping carts, transaction processing, and Stripe Checkout payments.
+Catto is a full-stack e-commerce portfolio project. This repository contains the Java backend, which connects MongoDB persistence, Firebase authentication, and Stripe Checkout to support the shopping journey from product discovery to transaction history.
+
+The live demo links to the deployed frontend. Start by browsing products and trying search, filters, and sorting, then sign up to explore the shopping cart. Transaction endpoints require a verified email address.
 
 ## Features
 
-- Product listing, search, filtering, sorting, and price range queries
-- Firebase JWT authentication
-- MongoDB persistence for products, users, carts, and transactions
-- Stripe Checkout session creation
-- Jib-based container image build
-- Development profile with MongoDB query logging
+- **Product discovery** — product listing and details, search, filtering, sorting, and price range queries.
+- **Shopping cart** — authenticated cart access with add, update, and remove operations.
+- **Accounts and profiles** — Firebase authentication, profile retrieval and updates, and email verification checks for user creation and transactions.
+- **Checkout and transactions** — Stripe Checkout session creation, transaction details, and transaction history.
+- **Contact form** — a public endpoint for submitting customer messages.
+
+### Backend design highlights
+
+- Validates Firebase JWTs against the configured issuer and project audience using Spring Security OAuth2 Resource Server.
+- Looks up individual transactions by both user and transaction ID to enforce ownership.
+- Separates controllers, services, and repositories, with DTOs for API requests and responses.
+- Supports container image builds with Jib and a development profile for MongoDB query logging and Stripe management endpoints.
 
 ## Tech stack
 
-- Java 17
-- Spring Boot
-- Spring Web
-- Spring Security OAuth2 Resource Server
-- Spring Data MongoDB
-- Stripe Java SDK
-- Gradle and Jib
+| Area | Technology |
+| --- | --- |
+| Language and framework | Java 17, Spring Boot 3.3.1, Spring Web |
+| Authentication | Firebase Authentication, Spring Security OAuth2 Resource Server |
+| Database | MongoDB, Spring Data MongoDB |
+| Payments | Stripe Java SDK, Stripe Checkout |
+| Testing | JUnit 5, Mockito, MockMvc, Testcontainers |
+| Build and packaging | Gradle, Jib |
 
 ## Run locally
 
@@ -35,14 +49,14 @@ A Spring Boot backend for an e-commerce application. It supports product browsin
 
 ### Environment variables
 
-The application requires the following environment variables. No real credentials are included in this repository.
+Set the following environment variables with your own local or test configuration:
 
 ```bash
 export JWT_ISSUER_URI="https://securetoken.google.com/your-firebase-project-id"
 export FIREBASE_PROJECT_ID="your-firebase-project-id"
 export STRIPE_SECRET_KEY="your-stripe-test-key"
 export MONGODB_URI="mongodb://localhost:27017/eshop"
-export MONGODB_DATABASE="MongoDB"
+export MONGODB_DATABASE="eshop"
 export SPRING_PROFILES_ACTIVE="development"
 ```
 
@@ -65,13 +79,15 @@ The server runs on `http://localhost:8080`.
 
 The standard test command runs the service unit tests and standalone MockMvc tests. These tests use mocks, so they do not call the real Stripe API or require a running MongoDB instance.
 
-The latest test run completed successfully with 31 tests and 0 failures. The HTML test report is generated at:
+Standalone MockMvc tests exercise controller behaviour without the full Spring Security filter chain. They do not establish end-to-end authentication or payment correctness.
+
+After running the tests, open the generated HTML report:
 
 ```text
 build/reports/tests/test/index.html
 ```
 
-MongoDB integration tests use Testcontainers and require Docker. They can be run separately with:
+MongoDB integration tests use Testcontainers and require Docker. Run only the integration-tagged tests with:
 
 ```bash
 ./gradlew test -PincludeIntegrationTests
