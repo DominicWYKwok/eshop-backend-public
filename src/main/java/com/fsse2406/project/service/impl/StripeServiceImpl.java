@@ -37,10 +37,9 @@ public class StripeServiceImpl implements StripeService {
     @Value("${stripe.secret.key}")
     private String secretKey;
 
-    @Value("${spring.profiles.active:dev}") // Default to "dev" if the property is not set
-    private String activeProfile;
-
-    public StripeServiceImpl(ProductService productService, StripeRepository stripeRepository, ProductRepository productRepository) {
+    public StripeServiceImpl(ProductService productService, StripeRepository stripeRepository,
+                             ProductRepository productRepository,
+                             @Value("${spring.profiles.active:dev}") String activeProfile) {
         this.productService = productService;
         this.stripeRepository = stripeRepository;
         this.domain = "prod".equals(activeProfile)

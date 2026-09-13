@@ -5,6 +5,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.annotation.Id;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.FieldType;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -24,6 +26,7 @@ public class ProductEntity {
 
     private List<String> images = new ArrayList<>();
 
+    @Field(targetType = FieldType.DECIMAL128)
     private BigDecimal price;
 
     private Integer stock;

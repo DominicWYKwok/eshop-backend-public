@@ -10,6 +10,8 @@ import com.fsse2406.project.util.JwtUtil;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/transaction")
 @CrossOrigin({EnvConfig.DEV_BASE_URL, EnvConfig.PROD_BASE_URL})
@@ -22,15 +24,24 @@ public class TransactionApi {
 
     @PostMapping
     public TransactionResponseDto prepareTransaction(JwtAuthenticationToken jwt) {
-        FirebaseUserData firebaseUserData = JwtUtil.getFirebaseUserData(jwt);
+        FirebaseUserData firebaseUserData = JwtUtil.getVerifiedFirebaseUserData(jwt);
         TransactionResponseData transactionResponseData = transactionService.prepareTransaction(firebaseUserData);
         return new TransactionResponseDto(transactionResponseData);
+    }
+
+    @GetMapping
+    public List<TransactionResponseDto> getAllSuccessTransactions(JwtAuthenticationToken jwt) {
+        FirebaseUserData firebaseUserData = JwtUtil.getVerifiedFirebaseUserData(jwt);
+        return transactionService.getAllSuccessTransactions(firebaseUserData)
+                .stream()
+                .map(TransactionResponseDto::new)
+                .toList();
     }
 
     @GetMapping("/{tid}")
     public TransactionResponseDto getTransactionByTid(JwtAuthenticationToken jwt,
                                                       @PathVariable String tid) {
-        FirebaseUserData firebaseUserData = JwtUtil.getFirebaseUserData(jwt);
+        FirebaseUserData firebaseUserData = JwtUtil.getVerifiedFirebaseUserData(jwt);
         TransactionResponseData transactionResponseData = transactionService.getTransactionById(firebaseUserData, tid);
         return new TransactionResponseDto(transactionResponseData);
     }
@@ -38,14 +49,14 @@ public class TransactionApi {
     @PatchMapping({"/{tid}/pay"})
     public PaySuccessfullyResponseDto payTransaction(JwtAuthenticationToken jwt,
                                                      @PathVariable String tid){
-        FirebaseUserData firebaseUserData = JwtUtil.getFirebaseUserData(jwt);
+        FirebaseUserData firebaseUserData = JwtUtil.getVerifiedFirebaseUserData(jwt);
         return new PaySuccessfullyResponseDto(transactionService.payTransaction(firebaseUserData, tid));
     }
 
     @PatchMapping({"/{tid}/finish"})
     public TransactionResponseDto finishTransaction(JwtAuthenticationToken jwt,
                                                      @PathVariable String tid){
-        FirebaseUserData firebaseUserData = JwtUtil.getFirebaseUserData(jwt);
+        FirebaseUserData firebaseUserData = JwtUtil.getVerifiedFirebaseUserData(jwt);
         TransactionResponseData transactionResponseData = transactionService.finishTransaction(firebaseUserData, tid);
         return new TransactionResponseDto(transactionResponseData);
     }

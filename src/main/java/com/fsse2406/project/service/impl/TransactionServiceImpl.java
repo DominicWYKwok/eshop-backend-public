@@ -84,6 +84,19 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    public List<TransactionResponseData> getAllSuccessTransactions(FirebaseUserData firebaseUserData) {
+        UserEntity userEntity = userService.getExistingEntityByFirebaseUserData(firebaseUserData);
+        return transactionRepository
+                .findByUserAndStatusOrderByDatetimeDesc(userEntity, TransactionStatus.SUCCESS)
+                .stream()
+                .map(transactionEntity -> new TransactionResponseData(
+                        transactionEntity,
+                        transactionProductService.getAllTransactionProductsByTransation(transactionEntity)
+                ))
+                .toList();
+    }
+
+    @Override
     public TransactionResponseData getTransactionById(FirebaseUserData firebaseUserData, String tid) {
         try {
             TransactionEntity transactionEntity = getTransactionEntityById(firebaseUserData, tid);

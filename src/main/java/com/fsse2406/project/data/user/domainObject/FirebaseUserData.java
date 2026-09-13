@@ -7,9 +7,13 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 public class FirebaseUserData {
     private String firebaseUid;
     private String email;
+    private boolean emailVerified;
 
     public FirebaseUserData(JwtAuthenticationToken jwt) {
-        this.firebaseUid = (String)jwt.getTokenAttributes().get("user_id");
+        this.firebaseUid = (String) jwt.getTokenAttributes().get("user_id");
         this.email = (String) jwt.getTokenAttributes().get("email");
+        this.emailVerified = Boolean.TRUE.equals(
+                jwt.getTokenAttributes().get("email_verified")
+        );
     }
 }
